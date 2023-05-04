@@ -9,11 +9,11 @@ SCREEN_WIDTH = 1280
 GROUND_WIDTH = SCREEN_WIDTH / 2
 GROUND_HEIGHT = 120
 
-PLAYER = [pygame.transform.scale(pygame.image.load(os.path.join("imgs", "mario1.png")), (120, 120)),
-          pygame.transform.scale(pygame.image.load(os.path.join("imgs", "mario2.png")), (120, 120)),
-          pygame.transform.scale(pygame.image.load(os.path.join("imgs", "mario3.png")), (120, 120))]
+PLAYER = [pygame.transform.scale(pygame.image.load(os.path.join("imgs", "player", "mario1.png")), (120, 120)),
+          pygame.transform.scale(pygame.image.load(os.path.join("imgs", "player", "mario2.png")), (120, 120)),
+          pygame.transform.scale(pygame.image.load(os.path.join("imgs", "player", "mario3.png")), (120, 120))]
 
-GROUND = pygame.transform.scale(pygame.image.load(os.path.join("imgs", "ground.png")), (GROUND_WIDTH + 10, GROUND_HEIGHT))
+GROUND = pygame.transform.scale(pygame.image.load(os.path.join("imgs", "ground", "ground.png")), (GROUND_WIDTH + 10, GROUND_HEIGHT))
 BG = 0
 
 class Player: 
@@ -179,7 +179,7 @@ def main():
             player.moving = False
             
                 
-        if key[pygame.K_SPACE]:
+        if key[pygame.K_SPACE] or key[pygame.K_w]:
             player.is_jump = True
             
                         
