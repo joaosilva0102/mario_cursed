@@ -16,7 +16,7 @@ PLAYER = [pygame.transform.scale(pygame.image.load(os.path.join("imgs", "player"
 GROUND = pygame.transform.scale(pygame.image.load(os.path.join("imgs", "ground", "ground.png")), (GROUND_WIDTH + 10, GROUND_HEIGHT))
 BG = 0
 
-class Player: 
+class Player(): 
     IMG = PLAYER
     FLIP_IMG = list(map(lambda x: pygame.transform.flip(x, True, False), IMG))
     SPRINT_VEL = 15
@@ -31,20 +31,17 @@ class Player:
         self.is_jump = False
         self.vel = self.WALK_VEL
         self.walk_count = 0
-        self.left = False
-        self.right = False
+        self.direction = "right"
         self.img = self.IMG[0]
         
     def move_forward(self):
         self.xpos += self.vel
-        self.right = True
-        self.left = False
+        self.direction = "right"
         self.moving = True
         
     def move_backward(self):
         self.xpos -= self.vel
-        self.right = False
-        self.left = True
+        self.direction = "left"
         self.moving = True
   
     def sprint(self):
@@ -75,18 +72,18 @@ class Player:
         if self.walk_count + 1 >= rate:
             self.walk_count = 0
             
-        if self.left and not self.is_jump and self.moving:
+        if self.direction == "left" and not self.is_jump and self.moving:
             self.img = self.FLIP_IMG[self.walk_count // (rate // 3)]
             screen.blit(self.img, (self.xpos, self.ypos))
             self.walk_count += 1
             
-        elif self.right and not self.is_jump and self.moving:
+        elif self.direction == "right" and not self.is_jump and self.moving:
             self.img = self.IMG[self.walk_count // (rate // 3)]
             screen.blit(self.img, (self.xpos, self.ypos))
             self.walk_count += 1
             
         else:
-            if self.right:
+            if self.direction == "right":
                 if self.is_jump:
                     self.img = self.IMG[2]
                 else:
@@ -142,48 +139,48 @@ def draw_window(screen, player, ground):
     
     
     
+def handle_moves(player, ground):
+    key = pygame.key.get_pressed()
+    if key[pygame.K_d]:
+        player.moving = True    
+        if player.xpos <= SCREEN_WIDTH / 2 - 80:
+            player.move_forward()
+        if player.xpos >= SCREEN_WIDTH / 2 - 80:
+            player.right = True
+            ground.move(player)
+
+    if key[pygame.K_a]:     
+        if player.xpos > -40:
+            player.move_backward()
+            
+    if key[pygame.K_LSHIFT]:
+        player.sprint()    
+    else:
+        player.walk()
+        
+    if not key[pygame.K_d] and not key[pygame.K_a]:
+        player.moving = False
+        
+            
+    if key[pygame.K_SPACE] or key[pygame.K_w]:
+        player.is_jump = True
+                  
+    player.jump()
 def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     player = Player(100, SCREEN_HEIGHT - 240) 
     ground = Ground()
-    count = 0
     running = True
     while running:
         clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                running = False
                 pygame.quit()
                 quit()
                 
-        key = pygame.key.get_pressed()
-        if key[pygame.K_d]:
-            player.moving = True    
-            if player.xpos <= SCREEN_WIDTH / 2 - 80:
-                player.move_forward()
-            if player.xpos >= SCREEN_WIDTH / 2 - 80:
-                player.right = True
-                ground.move(player)
-
-        if key[pygame.K_a]:     
-            if player.xpos > -40:
-                player.move_backward()
-                
-        if key[pygame.K_LSHIFT]:
-            player.sprint()    
-        else:
-            player.walk()
-            
-        if not key[pygame.K_d] and not key[pygame.K_a]:
-            player.moving = False
-            
-                
-        if key[pygame.K_SPACE] or key[pygame.K_w]:
-            player.is_jump = True
-            
-                        
-        player.jump()
+        handle_moves(player, ground)
         draw_window(screen, player, ground)
         
     
